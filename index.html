@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,6 +9,12 @@
   <title>Rjbavtt | Portafolio creativo</title>
 
   <link rel="stylesheet" href="styles.css">
+
+  <link rel="preload" as="image" href="footage-01.jpg" fetchpriority="high">
+
+  <!-- Marca JS disponible: permite ocultar el hero un instante hasta que
+       GSAP fija el estado inicial del efecto (evita el "flash" final) -->
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 
 <body>
@@ -27,40 +32,91 @@
 
   <main>
 
-    <!-- PORTADA -->
+    <!-- PORTADA ANIMADA -->
+    <!-- Efecto scroll estilo "hero burst": la imagen principal parte ocupando
+         todo el hero y, al hacer scroll, se contrae en una tarjeta 9:16 mientras
+         seis fotogramas salen despedidos en cascada; al final aparece el texto. -->
     <section class="hero" id="inicio">
-      <div class="hero-content">
-        <span class="eyebrow">PORTAFOLIO PROFESIONAL · 2026</span>
+      <div class="hero-pin">
+        <div class="hero-stage">
 
-        <h1>
-        Diseño, tecnología<br>
-        <span class="highlight">y dirección creativa.</span>
-        </h1>
+          <div class="hero-content">
+            <span class="eyebrow">PORTAFOLIO PROFESIONAL · 2026</span>
 
-        <p>
-          Soy Rjbavtt, productor multimedia y director creativo.
-          Desarrollo conceptos, narrativas y soluciones visuales
-          para proyectos digitales y audiovisuales.<br>
-          <span class="highlight">Sobre todo, lo que conecte con la identidad.</span>
-        </p>
+            <div class="hero-ticker" aria-hidden="true">
+              <div class="hero-ticker-track">
+                <span>Diseño digital</span>
+                <span>Dirección creativa</span>
+                <span>Producción audiovisual</span>
+                <span>Diseño digital</span>
+                <span>Dirección creativa</span>
+                <span>Producción audiovisual</span>
+              </div>
+            </div>
 
-        <div class="hero-actions">
-          <a class="button button-dark" href="#proyectos">
-            Explorar proyectos
-          </a>
+            <h1>
+            Diseño, tecnología<br>
+            <span class="highlight">y dirección creativa.</span>
+            </h1>
 
-          <a class="text-link" href="#contacto">
-            Contactar ↗
-          </a>
+            <p>
+              Soy Rjbavtt, productor multimedia y director creativo.
+              Desarrollo conceptos, narrativas y soluciones visuales
+              para proyectos digitales y audiovisuales.<br>
+              <span class="highlight">Sobre todo, lo que conecte con la identidad.</span>
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-dark" href="#proyectos">
+                Explorar proyectos
+              </a>
+
+              <a class="text-link" href="#contacto">
+                Contactar ↗
+              </a>
+
+              <a class="hero-cue" href="#perfil" aria-label="Bajar a la sección de perfil">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M13 5L8 10L3 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="hero-media">
+            <div class="hero-burst" aria-hidden="true">
+              <div class="hero-card hero-card--burst burst-1">
+                <img src="footage-02.jpg" alt="" loading="eager" decoding="async">
+              </div>
+              <div class="hero-card hero-card--burst burst-2">
+                <img src="footage-03.jpg" alt="" loading="eager" decoding="async">
+              </div>
+              <div class="hero-card hero-card--burst burst-3">
+                <img src="footage-01.jpg" alt="" loading="eager" decoding="async">
+              </div>
+              <div class="hero-card hero-card--burst burst-4">
+                <img src="footage-02.jpg" alt="" loading="eager" decoding="async">
+              </div>
+              <div class="hero-card hero-card--burst burst-5">
+                <img src="footage-03.jpg" alt="" loading="eager" decoding="async">
+              </div>
+              <div class="hero-card hero-card--burst burst-6">
+                <img src="footage-01.jpg" alt="" loading="eager" decoding="async">
+              </div>
+            </div>
+
+            <div class="hero-card hero-card--main">
+              <img src="footage-01.jpg"
+                   alt="Fotograma de producción audiovisual: retrato con sombrero blanco y teléfono"
+                   loading="eager" fetchpriority="high" decoding="async">
+            </div>
+
+            <span class="hero-caption">CREATIVIDAD · CONCEPTO · PRODUCCIÓN</span>
+          </div>
+
+          <span class="hero-hint" aria-hidden="true">Desliza para entrar al portafolio</span>
+
         </div>
-      </div>
-
-      <div class="hero-image">
-        <img
-          src="perfil.png"
-          alt="Imagen representativa del trabajo creativo"
-        >
-        <span class="image-caption">CREATIVIDAD · CONCEPTO · PRODUCCIÓN</span>
       </div>
     </section>
 
@@ -644,5 +700,129 @@
     <a href="#inicio">Volver arriba ↑</a>
   </footer>
 
+  <!-- EFECTO DEL HERO: GSAP 3 + ScrollTrigger (CDN) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script>
+    /* Red de seguridad: si el CDN de GSAP no responde, se muestra el hero
+       estático (el estado CSS por defecto ya es el layout final). */
+    setTimeout(function () {
+      document.documentElement.classList.add('hero-ready');
+    }, 3000);
+
+    window.addEventListener('DOMContentLoaded', function () {
+      var root = document.documentElement;
+
+      if (!window.gsap || !window.ScrollTrigger) {
+        root.classList.add('hero-ready');
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+      /* Evita refreshes por el hide/show de la barra de URL en móviles */
+      ScrollTrigger.config({ ignoreMobileResize: true });
+
+      var stage = document.querySelector('.hero-stage');
+      var media = document.querySelector('.hero-media');
+      var mainCard = document.querySelector('.hero-card--main');
+      var burstCards = gsap.utils.toArray('.hero-card--burst');
+      var content = document.querySelector('.hero-content');
+      var caption = document.querySelector('.hero-caption');
+      var hint = document.querySelector('.hero-hint');
+      var tickerTrack = document.querySelector('.hero-ticker-track');
+      var mqMobile = window.matchMedia('(max-width: 650px)');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (!stage || !mainCard || reduceMotion) {
+        root.classList.add('hero-ready');
+        return;
+      }
+
+      /* Escala inicial: la necesaria para que la tarjeta principal (9:16)
+         cubra TODO el viewport desde su posición final (columna derecha).
+         Se calcula con offsets de layout (offsetLeft/offsetTop), que son
+         inmunes al scroll y al estado del pin, a diferencia de
+         getBoundingClientRect. Solo usa transform: el efecto es 100% GPU. */
+      function coverScale() {
+        var cw = mainCard.offsetWidth || 1;
+        var ch = mainCard.offsetHeight || 1;
+        var vw = window.innerWidth;
+        var vh = window.innerHeight;
+        var stageLeft = (vw - stage.offsetWidth) / 2;
+        var sx = stageLeft + media.offsetLeft + media.offsetWidth / 2;
+        var sy = media.offsetTop + media.offsetHeight / 2;
+        return Math.max(
+          (Math.max(sx, vw - sx) * 2) / cw,
+          (Math.max(sy, vh - sy) * 2) / ch
+        ) * 1.02;
+      }
+
+      function cardW() { return mainCard.offsetWidth; }
+      function cardH() { return mainCard.offsetHeight; }
+      function burstFactor() { return mqMobile.matches ? 0.7 : 1; }
+
+      /* Posiciones finales del burst: fracciones del tamaño de la tarjeta,
+         en orden de salida (espejadas: lejos = pequeña, cerca = grande). */
+      var BURST = [
+        { x: -0.42, y: -0.55, s: 0.26 },
+        { x:  0.52, y: -0.52, s: 0.50 },
+        { x:  1.02, y: -0.15, s: 0.15 },
+        { x:  0.72, y:  0.46, s: 0.42 },
+        { x: -0.14, y:  0.62, s: 0.30 },
+        { x: -0.55, y:  0.50, s: 0.15 }
+      ];
+
+      /* Ticker vertical continuo (equivalente ligero al carrusel Embla) */
+      if (tickerTrack) {
+        gsap.to(tickerTrack, { yPercent: -50, ease: 'none', duration: 7, repeat: -1 });
+      }
+
+      var tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.hero-pin',
+          start: 'top top',
+          end: '+=120%',
+          pin: true,
+          scrub: 0.6,
+          anticipatePin: 1,
+          invalidateOnRefresh: true
+        }
+      });
+
+      /* 1) La imagen principal baja de full-bleed a su tarjeta 9:16 */
+      tl.fromTo(mainCard,
+        { scale: coverScale },
+        { scale: 1, duration: 1, ease: 'power2.inOut' }, 0);
+
+      /* 2) Las 6 tarjetas salen despedidas en cascada desde detrás de la principal */
+      burstCards.forEach(function (el, i) {
+        var cfg = BURST[i % BURST.length];
+        tl.fromTo(el,
+          { x: 0, y: 0, scale: function () { return coverScale() * (0.972 + i * 0.004); } },
+          {
+            x: function () { return cfg.x * cardW() * burstFactor(); },
+            y: function () { return cfg.y * cardH() * burstFactor(); },
+            scale: cfg.s,
+            duration: 0.85,
+            ease: 'power3.out'
+          },
+          0.16 + i * 0.06);
+      });
+
+      /* 3) Aparece el contenido del hero (titular, texto y acciones) */
+      tl.fromTo(content,
+        { opacity: 0, y: 36 },
+        { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0.66);
+      tl.fromTo(caption,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3 }, 0.9);
+
+      /* 4) La pista de scroll se desvanece al avanzar */
+      tl.to(hint, { opacity: 0, duration: 0.2, ease: 'power1.out' }, 0.5);
+
+      /* Estado inicial aplicado: ya se puede mostrar el hero */
+      root.classList.add('hero-ready');
+    });
+  </script>
 </body>
 </html>
